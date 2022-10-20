@@ -1,0 +1,31 @@
+version: "2"
+
+services:
+  influxdb:
+    image: influxdb
+    container_name: local-influxdb #grafanaからアクセスするための名前
+    volumes:
+      - ~/infra/docker/grafana/influxdb:/var/lib/influxdb
+    ports:
+      - 8086:8086
+      - 8083:8083
+
+  grafana:
+    image: grafana/grafana:main-ubuntu
+    ports:
+      - 8085:3000 #grafanaのポート
+    user: "472"
+    volumes:
+      - ~/infra/docker/grafana/grafana:/var/lib/grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SERVER_ROOT_URL=http://192.168.77.6:8085
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - "./redis:/data"
