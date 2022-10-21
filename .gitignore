@@ -1,2 +1,5 @@
 docker
 redis
+logs
+grafana
+influxdb

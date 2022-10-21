@@ -5,7 +5,7 @@ services:
     image: influxdb
     container_name: local-influxdb #grafanaからアクセスするための名前
     volumes:
-      - ~/infra/docker/grafana/influxdb:/var/lib/influxdb
+      - ./influxdb:/var/lib/influxdb
     ports:
       - 8086:8086
       - 8083:8083
@@ -16,16 +16,24 @@ services:
       - 8085:3000 #grafanaのポート
     user: "472"
     volumes:
-      - ~/infra/docker/grafana/grafana:/var/lib/grafana
+      - ./grafana:/var/lib/grafana
     depends_on:
       - influxdb
+    tty: true
     environment:
       - GF_SERVER_ROOT_URL=http://192.168.77.6:8085
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
-  redis:
-    image: redis:latest
+  mysql:
+    build: ./mysql
+    container_name: mysql
+    tty: true
     ports:
-      - 6379:6379
+      - 3306:3306
     volumes:
-      - "./redis:/data"
+      - db-store:/var/lib/mysql
+      - ./logs:/var/log/mysql
+    env_file:
+      - ./mysql/.env
+volumes:
+  db-store:
