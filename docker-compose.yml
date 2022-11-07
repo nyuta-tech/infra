@@ -25,15 +25,20 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
   mysql:
-    build: ./mysql
+    image: mysql:latest
     container_name: mysql
-    tty: true
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+      TZ: ${TZ}
     ports:
-      - 3306:3306
+      - ${DB_PORT}:3306
     volumes:
       - db-store:/var/lib/mysql
-      - ./logs:/var/log/mysql
-    env_file:
-      - ./mysql/.env
+      - ./mysql/db.cnf:/etc/mysql/conf.d/my.cnf
+    tty: true
 volumes:
   db-store:
