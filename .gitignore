@@ -1,3 +1,4 @@
+.env
 docker
 redis
 logs
@@ -13,6 +14,3 @@ mysql/mysql/**
 
 jenkins/jenkins_home/**
 !jenkins/jenkins_home/.gitkeep
-
-.env
-jenkins/jenkins_home/*
