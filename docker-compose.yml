@@ -49,6 +49,8 @@ services:
     volumes:
       - ./jenkins/jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+      - .:/host_working/infra
+      - ~/develop:/host_working/develop
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
       interval: 10s
