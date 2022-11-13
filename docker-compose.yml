@@ -1,22 +1,22 @@
-version: "2"
+version: "3"
 
 services:
   influxdb:
-    image: influxdb
+    build: ./influxdb
     container_name: local-influxdb #grafanaからアクセスするための名前
     volumes:
-      - ./influxdb:/var/lib/influxdb
+      - ./influxdb/influxdb:/var/lib/influxdb
     ports:
       - 8086:8086
       - 8083:8083
 
   grafana:
-    image: grafana/grafana:main-ubuntu
+    build: ./grafana
     ports:
-      - 8085:3000 #grafanaのポート
+      - 3000:3000 #grafanaのポート
     user: "472"
     volumes:
-      - ./grafana:/var/lib/grafana
+      - ./grafana/grafana:/var/lib/grafana
     depends_on:
       - influxdb
     tty: true
@@ -25,7 +25,7 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
 
   mysql:
-    image: mysql:latest
+    image: mysql:8.0.31-debian
     container_name: mysql
     restart: always
     environment:
@@ -35,10 +35,27 @@ services:
       MYSQL_PASSWORD: ${DB_PASS}
       TZ: ${TZ}
     ports:
-      - ${DB_PORT}:3306
+      - 3306:3306
     volumes:
-      - db-store:/var/lib/mysql
+      - ./mysql/mysql:/var/lib/mysql
       - ./mysql/db.cnf:/etc/mysql/conf.d/my.cnf
     tty: true
+
+  jenkins:
+    build: ./jenkins
+    ports:
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - ./jenkins/jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    tty: true
+
 volumes:
   db-store:
