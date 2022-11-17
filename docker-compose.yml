@@ -22,7 +22,7 @@ services:
     tty: true
     environment:
       - GF_SERVER_ROOT_URL=http://192.168.77.6:8085
-      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASS}
 
   mysql:
     image: mysql:8.0.31-debian
